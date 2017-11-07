@@ -1,4 +1,4 @@
-package better.domain;
+package domain;
 
 public abstract class Employee {
 

@@ -1,7 +1,5 @@
-package better;
-
-import better.domain.*;
-import better.service.Personnel;
+import domain.*;
+import service.Personnel;
 
 public class Salaires {
     public static void main(String[] args) {
