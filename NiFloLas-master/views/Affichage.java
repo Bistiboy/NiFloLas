@@ -1,64 +1,119 @@
+
 package views;
 
-import domain.Employee;
-import service.Personnel;
+import domain.*;
+
+import service.*;
+
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import views.AddEmploye;
+import static javax.swing.SwingUtilities.invokeLater;
 
-import java.awt.event.ActionEvent;
 
-public class Affichage extends JPanel{
-    public Personnel personnel;
-    private JFrame gui;
+public class Dashboard {
+    private JPanel panelAdd;
+    private JPanel panelView;
+    private JPanel panelMain = new JPanel();
+    private JFrame frame;
 
-    //constructeur de la vue
-    public Affichage(JFrame gui, Personnel personnel){
-        this.personnel = personnel;
-        this.gui = gui;
-        printView();
+    public Dashboard(JFrame frame){
+        this.frame = frame;
+
     }
 
-    public void printView(){
 
-    JLabel title = new JLabel("Liste des employés");
-    JButton retour = new JButton("Retour");
 
-    retour.addActionListener(this::retour);
-    String tableHeaders[] = {"Nom", "Prénom", "Age", "Date d'entrée", "Type", "Salaire"};
 
-    DefaultTableModel tableModel = new DefaultTableModel(tableHeaders, 0);
-
-    //récupération de chaque employés grace à getNumEmployee
-    for(int i = 0; i < this.personnel.getNumEmployee(); i++) {
-
-        Employee employee = personnel.getEmployees().get(i); // récupération de l'employé
-
-        String nom = employee.getLastname(); //recuperation du nom
-        String prenom = employee.getFirstname();
-        String age = String.valueOf(employee.getAge());
-        String date = employee.getEntryYear();
-        String type = employee.getType();
-        String salaire = String.valueOf(employee.calculerSalaire());
-
-        Object[] data = {nom, prenom, age, date,type,salaire}; // ajout de l'employé dans un tableau
-        tableModel.addRow(data); // ajout du tableau dans la JTable
+    public static void main(String[] args){
+        invokeLater(Dashboard::window);
     }
 
-    //création de la jtable
-    JTable listTable = new JTable(tableModel);
 
-    listTable.setSize(500,150);
-
-    this.add(title); //ajout du titre
-    this.add(listTable); //ajout de la table
-    this.add(retour); // bouton retour
-
-    gui.setContentPane(this);
-    gui.revalidate();
+    public static void window() {
+        Dashboard app = new Dashboard(new JFrame("Programme Java"));
+        app.run(new AddEmploye(), new Affichage());
     }
 
-    private void retour(ActionEvent actionEvent) {
-       // gui.setContentPane();
+
+
+
+
+    public void run(AddEmploye addEmploye, Affichage affichage){
+        Personnel personnel = new Personnel();
+
+        personnel.ajouterEmploye(new Vendeur("Florian","Taurand",2,"2016",12));
+        personnel.ajouterEmploye(new Vendeur("Florian","Taurand2",2,"2016",12));
+        personnel.ajouterEmploye(new Vendeur("Florian","Taurand3",2,"2016",12));
+
+        //addEmploye.run();
+        affichage.run(this.frame, personnel);
+        addEmploye.run(this.frame, personnel);
+
+
+
+
+
+
+
+
+        JButton buttonAdd = new JButton("Ajouter des employÃ©es");
+        buttonAdd.addActionListener(e -> addEmploye.refreshPageAdd());
+        //buttonAdd.addActionListener(e -> new Affichage(this.frame, AddEmploye));
+
+        JButton buttonView = new JButton("Voir les employÃ©es");
+        buttonView.addActionListener(e -> affichage.refreshPage()); // bouton pour afficher la liste
+
+        this.panelMain.setLayout(new FlowLayout());
+        this.panelMain.add(buttonAdd);
+        this.panelMain.add(buttonView);
+
+        affichage.panelDashboard = this.panelMain;
+        addEmploye.panelDashboard = this.panelMain;
+
+
+        //panelDashboard.add(buttonAdd, BorderLayout.CENTER);
+        //panelDashboard.add(buttonView, BorderLayout.CENTER);
+
+
+        //frame.getContentPane().add(panelDashboard);
+
+
+        //frame.pack();
+        this.frame.setSize(800, 500);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.frame.setLocation(dim.width/2 - this.frame.getWidth()/2, dim.height/2 - this.frame.getHeight()/2);
+        this.frame.setVisible(true);
+
+        this.frame.getContentPane().removeAll();
+        this.frame.getContentPane().add(this.panelMain);
+        this.frame.revalidate();
+        this.frame.repaint();
+
+    }
+
+
+
+    private static void run2(){
+        JFrame frame = new JFrame("Tableau");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JTable table = new JTable(new Object[][]{
+                {"Nom","Valeur 1"},
+                {"PrÃ©nom", "Valeur 2"},
+                {"Age", "Valeur 3"},
+                {"Date d'entrÃ©e", "Valeur 4"},
+                {"Type", "Valeur 5"},
+                {"Salaire", "Valeur 6"}
+        }, new String[]{"Informations", "Valeurs"});
+
+        frame.getContentPane().setLayout(new FlowLayout());
+        frame.getContentPane().add(new JScrollPane(table));
+
+        frame.pack();
+        frame.setVisible(true);
     }
 }
